@@ -1,0 +1,44 @@
+<%= turbo_frame_tag "tv_session_#{session.id}" do %>
+  <%
+    time_remaining = session.time_remaining
+    card_class = if session.expired?
+      "bg-red-600 border-red-800 animate-blink"
+    elsif time_remaining < 600
+      "bg-yellow-600 border-yellow-800"
+    else
+      "bg-green-600 border-green-800"
+    end
+  %>
+
+  <div class="<%= card_class %> rounded-lg p-8 border-4"
+       data-controller="countdown"
+       data-countdown-ends-at-value="<%= session.ends_at.iso8601 %>"
+       data-countdown-session-id-value="<%= session.id %>">
+    <div class="text-center">
+      <div class="mb-4">
+        <span class="inline-block px-4 py-2 bg-black bg-opacity-30 rounded-full text-xl">
+          <%= session.session_type_label %>
+        </span>
+      </div>
+
+      <h2 class="text-5xl font-bold mb-8"><%= session.client_name %></h2>
+
+      <div class="text-8xl font-mono font-bold mb-4" data-countdown-target="display">
+        <%= session.time_remaining_formatted %>
+      </div>
+
+      <div class="text-2xl text-gray-200">
+        <% if session.expired? %>
+          Sessão Expirada
+        <% else %>
+          Tempo Restante
+        <% end %>
+      </div>
+
+      <div class="mt-6 text-xl text-gray-200">
+        Início: <%= session.started_at.strftime("%H:%M") %> |
+        Término: <%= session.ends_at.strftime("%H:%M") %>
+      </div>
+    </div>
+  </div>
+<% end %>

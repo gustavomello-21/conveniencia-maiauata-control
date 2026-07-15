@@ -1,0 +1,25 @@
+<tr class="<%= 'bg-yellow-50' if product.low_stock? %>">
+  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+    <%= product.name %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+    R$ <%= number_to_currency(product.price, unit: "", precision: 2) %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm">
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= product.low_stock? ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' %>">
+      <%= product.stock_quantity %> un.
+    </span>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm">
+    <%= form_with url: sell_product_path(product), method: :post, class: "flex gap-2 items-center" do %>
+      <%= number_field_tag :quantity, 1, min: 1, max: product.stock_quantity, class: "w-16 px-2 py-1 border border-gray-300 rounded-md" %>
+      <%= submit_tag "Vender", disabled: product.stock_quantity <= 0, class: "bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" %>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm">
+    <%= form_with url: restock_product_path(product), method: :post, class: "flex gap-2 items-center" do %>
+      <%= number_field_tag :quantity, 1, min: 1, class: "w-16 px-2 py-1 border border-gray-300 rounded-md" %>
+      <%= submit_tag "Adicionar", class: "bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 cursor-pointer" %>
+    <% end %>
+  </td>
+</tr>

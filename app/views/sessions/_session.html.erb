@@ -1,0 +1,51 @@
+<%= turbo_frame_tag "session_#{session.id}" do %>
+  <%
+    time_remaining = session.time_remaining
+    row_class = if session.expired?
+      "bg-red-50 animate-blink"
+    elsif time_remaining < 600
+      "bg-yellow-50"
+    else
+      ""
+    end
+  %>
+
+  <tr class="<%= row_class %>"
+      data-controller="countdown"
+      data-countdown-ends-at-value="<%= session.ends_at.iso8601 %>"
+      data-countdown-session-id-value="<%= session.id %>">
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+      <%= session.client_name %>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= session.session_type_badge_class %>">
+        <%= session.session_type_label %>
+      </span>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <%= session.started_at.strftime("%H:%M") %>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <%= session.ends_at.strftime("%H:%M") %>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono" data-countdown-target="display">
+      <%= session.time_remaining_formatted %>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm">
+      <% if session.expired? %>
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+          Expirada
+        </span>
+      <% else %>
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+          Ativa
+        </span>
+      <% end %>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+      <%= button_to "+30min", renew_session_path(session, minutes: 30), method: :post, class: "inline-block bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600" %>
+      <%= button_to "+1h", renew_session_path(session, minutes: 60), method: :post, class: "inline-block bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600" %>
+      <%= button_to "Encerrar", finish_session_path(session), method: :post, data: { turbo_confirm: "Tem certeza que deseja encerrar esta sessão?" }, class: "inline-block bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" %>
+    </td>
+  </tr>
+<% end %>

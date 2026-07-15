@@ -1,0 +1,21 @@
+<% content_for :skip_nav, true %>
+<% content_for :title, "Conveniência Maiauatá - TV Display" %>
+
+<div class="min-h-screen bg-gray-900 text-white p-8">
+  <div class="text-center mb-8">
+    <h1 class="text-6xl font-bold mb-2">Conveniência Maiauatá</h1>
+    <p class="text-2xl text-gray-400">Sessões Ativas</p>
+  </div>
+
+  <%= turbo_stream_from "tv_sessions" %>
+
+  <div id="tv-sessions-list" class="grid grid-cols-2 gap-8">
+    <% if @sessions.any? %>
+      <%= render partial: "tv/session_card", collection: @sessions, as: :session %>
+    <% else %>
+      <div class="col-span-2 text-center py-20">
+        <p class="text-4xl text-gray-500">Nenhuma sessão ativa</p>
+      </div>
+    <% end %>
+  </div>
+</div>
