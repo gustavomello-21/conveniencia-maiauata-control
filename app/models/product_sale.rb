@@ -1,5 +1,6 @@
 class ProductSale < ApplicationRecord
   belongs_to :product
+  belongs_to :sale, optional: true
 
   validates :quantity, presence: true, numericality: { greater_than: 0, only_integer: true }
   validate :quantity_within_stock

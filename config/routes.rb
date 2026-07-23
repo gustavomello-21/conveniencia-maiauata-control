@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # Autenticação
+  get "login", to: "login#new"
+  post "login", to: "login#create"
+  delete "logout", to: "login#destroy"
+
   # Defines the root path route ("/")
   root "sessions#index"
 
@@ -16,6 +21,15 @@ Rails.application.routes.draw do
     member do
       post :renew
       post :finish
+    end
+  end
+
+  resources :vendas, only: [:index, :new, :create] do
+    member do
+      post :refund
+    end
+    collection do
+      get :search
     end
   end
 

@@ -1,0 +1,75 @@
+<div data-controller="cart">
+  <h2 class="text-3xl font-bold mb-6">Nova Venda</h2>
+
+  <!-- Barra de busca -->
+  <div class="mb-6 relative">
+    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Buscar produto (nome ou codigo de barras)</label>
+    <input type="text"
+           id="search"
+           data-cart-target="searchInput"
+           data-action="input->cart#search blur->cart#hideResults"
+           placeholder="Digite o nome ou escaneie o codigo de barras..."
+           class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+           autocomplete="off">
+
+    <div data-cart-target="searchResults"
+         class="hidden absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
+    </div>
+  </div>
+
+  <!-- Tabela do carrinho -->
+  <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+    <table class="w-full">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Produto</th>
+          <th class="py-3 px-4 text-center text-sm font-semibold text-gray-600">Preco Unit.</th>
+          <th class="py-3 px-4 text-center text-sm font-semibold text-gray-600">Qtd</th>
+          <th class="py-3 px-4 text-center text-sm font-semibold text-gray-600">Subtotal</th>
+          <th class="py-3 px-4 text-center text-sm font-semibold text-gray-600"></th>
+        </tr>
+      </thead>
+      <tbody data-cart-target="cartBody">
+      </tbody>
+    </table>
+
+    <div data-cart-target="emptyMessage" class="p-8 text-center text-gray-400">
+      Nenhum produto adicionado. Use a busca acima para adicionar produtos.
+    </div>
+  </div>
+
+  <!-- Formulario com totais, desconto e botao -->
+  <%= form_with url: vendas_path, method: :post do |f| %>
+    <input type="hidden" name="items_json" data-cart-target="itemsPayload" value="[]">
+
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <label for="discount" class="text-sm font-medium text-gray-700">Desconto (R$):</label>
+          <input type="number" id="discount" name="discount" min="0" step="0.01" value="0"
+                 data-cart-target="discountInput"
+                 data-action="input->cart#updateDiscount"
+                 class="w-32 border border-gray-300 rounded px-3 py-2 text-right">
+        </div>
+
+        <div class="flex flex-col items-end gap-1">
+          <div class="text-gray-600">
+            Subtotal: <span data-cart-target="totalAmount" class="font-semibold">R$ 0,00</span>
+          </div>
+          <div class="text-2xl font-bold text-green-700">
+            Total: <span data-cart-target="finalAmount">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-right">
+      <button type="submit"
+              data-cart-target="submitButton"
+              disabled
+              class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg opacity-50 cursor-not-allowed transition-colors">
+        Finalizar Venda
+      </button>
+    </div>
+  <% end %>
+</div>

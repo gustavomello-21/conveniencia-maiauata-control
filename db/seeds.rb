@@ -2,6 +2,14 @@
 ProductSale.destroy_all
 Product.destroy_all
 GameSession.destroy_all
+User.destroy_all
+
+puts "Criando usuários..."
+
+User.create!(email: "admin@playcontrol.com", password: "admin123", role: :admin)
+User.create!(email: "vendedor@playcontrol.com", password: "vendedor123", role: :vendedor)
+
+puts "#{User.count} usuários criados"
 
 puts "Criando sessões de exemplo..."
 
@@ -75,10 +83,10 @@ GameSession.create!(
 
 puts "Criando produtos de exemplo..."
 
-refrigerante = Product.create!(name: "Refrigerante Lata", price: 5.00, stock_quantity: 24)
-agua = Product.create!(name: "Água Mineral", price: 3.00, stock_quantity: 30)
-salgadinho = Product.create!(name: "Salgadinho", price: 6.00, stock_quantity: 15)
-chocolate = Product.create!(name: "Chocolate", price: 4.00, stock_quantity: 20)
+refrigerante = Product.create!(name: "Refrigerante Lata", price: 5.00, cost_price: 3.00, stock_quantity: 24, barcode: "7891000100103")
+agua = Product.create!(name: "Água Mineral", price: 3.00, cost_price: 1.50, stock_quantity: 30, barcode: "7891000200100")
+salgadinho = Product.create!(name: "Salgadinho", price: 6.00, cost_price: 3.50, stock_quantity: 15, barcode: "7891000300107")
+chocolate = Product.create!(name: "Chocolate", price: 4.00, cost_price: 2.00, stock_quantity: 20, barcode: "7891000400104")
 
 # Algumas vendas de exemplo (reduzem o estoque acima)
 refrigerante.product_sales.create!(quantity: 2, sold_at: 1.hour.ago)

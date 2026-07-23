@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_15_013601) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_23_171202) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -38,7 +38,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_013601) do
     t.datetime "sold_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "sale_id"
     t.index ["product_id"], name: "index_product_sales_on_product_id"
+    t.index ["sale_id"], name: "index_product_sales_on_sale_id"
     t.index ["sold_at"], name: "index_product_sales_on_sold_at"
   end
 
@@ -48,7 +50,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_013601) do
     t.integer "stock_quantity", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "cost_price", precision: 8, scale: 2
+    t.string "barcode"
+    t.index ["barcode"], name: "index_products_on_barcode", unique: true
     t.index ["name"], name: "index_products_on_name", unique: true
+  end
+
+  create_table "sales", force: :cascade do |t|
+    t.decimal "total_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "discount", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "final_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.bigint "user_id", null: false
+    t.datetime "sold_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.index ["user_id"], name: "index_sales_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -209,7 +226,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_15_013601) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "password_digest", null: false
+    t.integer "role", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+  end
+
   add_foreign_key "product_sales", "products"
+  add_foreign_key "product_sales", "sales"
+  add_foreign_key "sales", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

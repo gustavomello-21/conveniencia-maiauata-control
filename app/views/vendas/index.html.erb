@@ -1,0 +1,69 @@
+<div class="flex items-center justify-between mb-6">
+  <h2 class="text-3xl font-bold">Vendas</h2>
+  <%= link_to "Nova Venda", new_venda_path, class: "bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg" %>
+</div>
+
+<% if @sales.empty? %>
+  <div class="bg-white rounded-lg shadow p-8 text-center text-gray-400">
+    Nenhuma venda registrada ainda.
+  </div>
+<% else %>
+  <div class="space-y-4">
+    <% @sales.each do |sale| %>
+      <div class="bg-white rounded-lg shadow overflow-hidden <%= 'opacity-60' if sale.refunded? %>">
+        <div class="flex items-center justify-between px-6 py-4 border-b bg-gray-50">
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-500">Venda #<%= sale.id %></span>
+            <span class="text-sm text-gray-500"><%= sale.sold_at.strftime("%d/%m/%Y %H:%M") %></span>
+            <span class="text-sm text-gray-500">por <%= sale.user.email %></span>
+            <% if sale.refunded? %>
+              <span class="bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded">Extornada</span>
+            <% else %>
+              <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded">Concluida</span>
+            <% end %>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <% if sale.completed? %>
+              <%= button_to "Extornar", refund_venda_path(sale),
+                    method: :post,
+                    form: { data: { turbo_confirm: "Tem certeza que deseja extornar a venda ##{sale.id}? O estoque sera devolvido." } },
+                    class: "bg-red-600 hover:bg-red-700 text-white text-sm font-semibold py-1 px-4 rounded" %>
+            <% end %>
+          </div>
+        </div>
+
+        <table class="w-full">
+          <thead>
+            <tr class="text-xs text-gray-500 uppercase">
+              <th class="py-2 px-6 text-left">Produto</th>
+              <th class="py-2 px-6 text-center">Qtd</th>
+              <th class="py-2 px-6 text-center">Preco Unit.</th>
+              <th class="py-2 px-6 text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sale.product_sales.each do |ps| %>
+              <tr class="border-t">
+                <td class="py-2 px-6 <%= 'line-through text-gray-400' if sale.refunded? %>"><%= ps.product.name %></td>
+                <td class="py-2 px-6 text-center"><%= ps.quantity %></td>
+                <td class="py-2 px-6 text-center">R$ <%= '%.2f' % ps.unit_price %></td>
+                <td class="py-2 px-6 text-right">R$ <%= '%.2f' % ps.total_amount %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+        <div class="px-6 py-3 bg-gray-50 border-t flex justify-end gap-6 text-sm">
+          <% if sale.discount > 0 %>
+            <span class="text-gray-500">Subtotal: R$ <%= '%.2f' % sale.total_amount %></span>
+            <span class="text-gray-500">Desconto: -R$ <%= '%.2f' % sale.discount %></span>
+          <% end %>
+          <span class="font-bold text-lg <%= sale.refunded? ? 'text-gray-400 line-through' : 'text-green-700' %>">
+            Total: R$ <%= '%.2f' % sale.final_amount %>
+          </span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,6 +1,9 @@
 class ProductsController < ApplicationController
   def index
     @products = Product.order(:name)
+    if params[:search].present?
+      @products = @products.where("name ILIKE :q OR barcode = :exact", q: "%#{params[:search]}%", exact: params[:search])
+    end
     @product = Product.new
   end
 
@@ -41,6 +44,6 @@ class ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :price, :stock_quantity)
+    params.require(:product).permit(:name, :price, :cost_price, :stock_quantity, :barcode)
   end
 end

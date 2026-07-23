@@ -1,4 +1,6 @@
 class RelatoriosController < ApplicationController
+  before_action :require_admin
+
   def index
     # Filtrar por data se especificado
     date = params[:date].present? ? Date.parse(params[:date]) : Date.current
@@ -7,6 +9,8 @@ class RelatoriosController < ApplicationController
 
     sessions_today = GameSession.where(started_at: start_of_day..end_of_day)
     product_sales_today = ProductSale.where(sold_at: start_of_day..end_of_day)
+                                     .left_joins(:sale)
+                                     .where("sale_id IS NULL OR sales.status = ?", Sale.statuses[:completed])
 
     # Total de clientes
     @total_clients = sessions_today.count
